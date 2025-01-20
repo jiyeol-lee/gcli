@@ -1,4 +1,4 @@
-package google_oauth
+package goauth
 
 import (
 	"context"
@@ -30,10 +30,12 @@ type credentials struct {
 }
 
 type OAuth struct {
-	creds credentials
+	creds       credentials
+	oauthConfig *oauth2.Config
+	Client      *http.Client
 }
 
-// initializeCredentials method initializes the credentials for the OAuth client.
+// initializeCredentials method initializes the credentials for the OAuth client. It reads the GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.
 func (o *OAuth) initializeCredentials() {
 	googleClientId := os.Getenv("GOOGLE_CLIENT_ID")
 
@@ -58,6 +60,56 @@ func (o *OAuth) initializeCredentials() {
 			ClientSecret:        googleClientSecret,
 		},
 	}
+}
+
+// setOAuthConfig method returns a new OAuth2 config.
+func (o *OAuth) setOAuthConfig(scope ...string) error {
+	o.initializeCredentials()
+
+	b, err := json.Marshal(o.creds)
+	if err != nil {
+		return err
+	}
+
+	config, err := google.ConfigFromJSON(b, scope...)
+
+	o.oauthConfig = config
+
+	return err
+}
+
+// SetClient function retrieves a token, saves the token, then returns the generated client.
+func (o *OAuth) SetClient(scope ...string) error {
+	if o.Client != nil {
+		return nil
+	}
+
+	err := o.setOAuthConfig(scope...)
+	if err != nil {
+		return err
+	}
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return err
+	}
+
+	tokFile := home + "/token.json"
+	tok, err := getTokenFromFile(tokFile)
+	if err != nil {
+		tok, err = getTokenFromWeb(o.oauthConfig)
+		if err != nil {
+			return err
+		}
+		err := saveToken(tokFile, tok)
+		if err != nil {
+			return err
+		}
+	}
+
+	o.Client = o.oauthConfig.Client(context.Background(), tok)
+
+	return nil
 }
 
 // GetCalendarService method returns a new calendar service.

@@ -17,6 +17,18 @@ func StartOfDayTime() string {
 	return midnight.Format(time.RFC3339)
 }
 
+// EndOfDayTime function returns the RFC3339 formatted time for the end of the day
+func EndOfDayTime() string {
+	now := time.Now()
+
+	midnight := time.Date(
+		now.Year(), now.Month(), now.Day(),
+		23, 59, 59, 0, now.Location(),
+	)
+
+	return midnight.Format(time.RFC3339)
+}
+
 // CalculateDuration function calculates the duration between two RFC3339 formatted times
 func CalculateDuration(startTimeRFC3339, endTimeRFC3339 string) (time.Duration, error) {
 	startTime, err := time.Parse(time.RFC3339, startTimeRFC3339)

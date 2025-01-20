@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"google_app_cli/pkg/gcal"
 	"log"
 )
@@ -18,8 +17,8 @@ func main() {
 	}
 
 	for _, item := range evts.Items {
-		fmt.Printf("%v (%v - %v)\n", item.Summary, item.Start.DateTime, item.End.DateTime)
-		fmt.Printf("Working Hours : %s\n", c.GetWorkingHoursProperty(item))
+		log.Printf("%v (%v - %v)\n", item.Summary, item.Start.DateTime, item.End.DateTime)
+		log.Printf("Working Hours : %s\n", c.GetWorkingHoursProperty(item))
 	}
 
 	// evt, err := c.AddTotalWorkingEvent()
@@ -27,7 +26,7 @@ func main() {
 	// 	log.Fatalf("Unable to add total working event: %v", err)
 	// }
 	//
-	// fmt.Printf("Total Working Event: %v\n", evt.HtmlLink)
+	// log.Printf("Total Working Event: %v\n", evt.HtmlLink)
 
 	totalWorkingEvent, err := c.GetTodayTotalWorkingEvent(evts)
 	if err != nil {
@@ -37,7 +36,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Unable to update total working event: %v", err)
 	}
-	fmt.Printf("Total Working Event: %v\n", evt.HtmlLink)
+	log.Printf("Total Working Event: %v\n", evt.HtmlLink)
 
 	// _, err = c.UpsertPendingEvent()
 	// if err != nil {

@@ -45,6 +45,43 @@ func TestStartOfDayTime(t *testing.T) {
 	}
 }
 
+func TestEndOfDayTime(t *testing.T) {
+	tests := []struct {
+		name string
+		want string
+	}{
+		{
+			name: "Is RFC3339 formatted time for the end of the day",
+			want: func() string {
+				now := time.Now()
+
+				return fmt.Sprintf(
+					"^%s-%02d-%sT%s:%s:%s-\\d{2}:\\d{2}$",
+					strconv.Itoa(now.Year()),
+					now.Month(),
+					strconv.Itoa(now.Day()),
+					"23",
+					"59",
+					"59",
+				)
+			}(),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := EndOfDayTime()
+			match, matchErr := regexp.MatchString(tt.want, got)
+			if matchErr != nil {
+				t.Errorf("EndOfDayTime() error = %v", matchErr)
+				return
+			}
+			if !match {
+				t.Errorf("EndOfDayTime() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestCalculateDuration(t *testing.T) {
 	type args struct {
 		startTimeRFC3339 string
