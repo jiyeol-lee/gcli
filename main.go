@@ -2,91 +2,45 @@ package main
 
 import (
 	"fmt"
-	"google_calendar_cli/pkg/google_oauth"
-	"google_calendar_cli/pkg/utils"
+	"google_app_cli/pkg/gcal"
 	"log"
-	"time"
-
-	"google.golang.org/api/calendar/v3"
 )
 
 func main() {
-	o := google_oauth.OAuth{}
+	c := gcal.Calendar{
+		Id: "primary",
+	}
+	c.Initialize()
 
-	srv, err := o.GetCalendarService()
+	evts, err := c.GetTodayEvents(false)
 	if err != nil {
-		log.Fatalf("Unable to retrieve Calendar client: %v", err)
+		log.Fatalf("Unable to retrieve today's events: %v", err)
 	}
 
-	calendarId := "primary"
+	for _, item := range evts.Items {
+		fmt.Printf("%v (%v - %v)\n", item.Summary, item.Start.DateTime, item.End.DateTime)
+		fmt.Printf("Working Hours : %s\n", c.GetWorkingHoursProperty(item))
+	}
 
-	t := utils.StartOfDayTime()
-	events, err := srv.Events.List(calendarId).ShowDeleted(false).
-		SingleEvents(true).TimeMin(t).MaxResults(10).OrderBy("startTime").Do()
+	// evt, err := c.AddTotalWorkingEvent()
+	// if err != nil {
+	// 	log.Fatalf("Unable to add total working event: %v", err)
+	// }
+	//
+	// fmt.Printf("Total Working Event: %v\n", evt.HtmlLink)
+
+	totalWorkingEvent, err := c.GetTodayTotalWorkingEvent(evts)
 	if err != nil {
-		log.Fatalf("Unable to retrieve next ten of the user's events: %v", err)
+		log.Fatalf("Unable to get today's total working event: %v", err)
 	}
-	var pendingEvent *calendar.Event
-	for _, item := range events.Items {
-		if item.Start.DateTime == item.End.DateTime && (item.Start.DateTime != "") {
-			pendingEvent = item
-		}
-
-		if pendingEvent != nil {
-			break
-		}
+	evt, err := c.UpdateTotalWorkingEvent(totalWorkingEvent, evts)
+	if err != nil {
+		log.Fatalf("Unable to update total working event: %v", err)
 	}
+	fmt.Printf("Total Working Event: %v\n", evt.HtmlLink)
 
-	currentTime := time.Now().Format(time.RFC3339)
-	if pendingEvent != nil {
-		duration, err := utils.CalculateDuration(currentTime, pendingEvent.End.DateTime)
-		if err != nil {
-			log.Fatalf("Unable to calculate duration. %v\n", err)
-		}
-
-		pendingEvent.Summary = fmt.Sprintf("__Work (%.3f hrs)__", duration.Hours())
-		pendingEvent.End.DateTime = currentTime
-
-		event, err := srv.Events.Update(calendarId, pendingEvent.Id, pendingEvent).Do()
-		if err != nil {
-			log.Fatalf("Unable to update event. %v\n", err)
-		}
-		fmt.Printf("Event updated: %s\n", event.HtmlLink)
-	} else {
-		event := &calendar.Event{
-			Summary: "__Working__",
-			Start: &calendar.EventDateTime{
-				DateTime: currentTime,
-			},
-			End: &calendar.EventDateTime{
-				DateTime: currentTime,
-			},
-			Visibility:      "public",
-			Transparency:    "transparent",
-			GuestsCanModify: false,
-			ColorId:         "8",
-		}
-		boolFalse := false
-		event.GuestsCanSeeOtherGuests = &boolFalse
-		event.GuestsCanInviteOthers = &boolFalse
-
-		event, err = srv.Events.Insert(calendarId, event).Do()
-		if err != nil {
-			log.Fatalf("Unable to create event. %v\n", err)
-		}
-		fmt.Printf("Event created: %s\n", event.HtmlLink)
-	}
-
-	// fmt.Println("Upcoming events:")
-	// if len(events.Items) == 0 {
-	// 	fmt.Println("No upcoming events found.")
-	// } else {
-	// 	for _, item := range events.Items {
-	// 		date := item.Start.DateTime
-	// 		if date == "" {
-	// 			date = item.Start.Date
-	// 		}
-	// 		fmt.Printf("%v (%v)\n", item.Summary, date)
-	// 	}
+	// _, err = c.UpsertPendingEvent()
+	// if err != nil {
+	// 	log.Fatalf("Unable to upsert pending event: %v", err)
 	// }
 }

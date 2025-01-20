@@ -1,4 +1,4 @@
-module google_calendar_cli
+module google_app_cli
 
 go 1.23.4
 
