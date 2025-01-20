@@ -47,8 +47,8 @@ func (c *Calendar) Initialize() {
 }
 
 func (c *Calendar) GetTodayEvents(onlySingleEvent bool) (*calendar.Events, error) {
-	tmin := utils.StartOfDayTime()
-	tmax := utils.EndOfDayTime()
+	tmin := util.StartOfDayTime()
+	tmax := util.EndOfDayTime()
 	evtListCall := c.Service.Events.List(c.Id).ShowDeleted(false).
 		SingleEvents(onlySingleEvent).TimeMin(tmin).TimeMax(tmax)
 	var evts *calendar.Events
@@ -164,7 +164,7 @@ func (c *Calendar) UpdatePendingEvent(event *calendar.Event) (*calendar.Event, e
 	}
 
 	currentTime := time.Now().Format(time.RFC3339)
-	duration, err := utils.CalculateDuration(event.Start.DateTime, currentTime)
+	duration, err := util.CalculateTimeGap(event.Start.DateTime, currentTime)
 	if err != nil {
 		return nil, err
 	}

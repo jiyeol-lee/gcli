@@ -1,4 +1,4 @@
-package utils
+package util
 
 import (
 	"fmt"
@@ -82,7 +82,7 @@ func TestEndOfDayTime(t *testing.T) {
 	}
 }
 
-func TestCalculateDuration(t *testing.T) {
+func TestCalculateTimeGap(t *testing.T) {
 	type args struct {
 		startTimeRFC3339 string
 		endTimeRFC3339   string
@@ -141,13 +141,13 @@ func TestCalculateDuration(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := CalculateDuration(tt.args.startTimeRFC3339, tt.args.endTimeRFC3339)
+			got, err := CalculateTimeGap(tt.args.startTimeRFC3339, tt.args.endTimeRFC3339)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("CalculateDuration() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("CalculateTimeGap() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("CalculateDuration() = %v, want %v", got, tt.want)
+				t.Errorf("CalculateTimeGap() = %v, want %v", got, tt.want)
 			}
 		})
 	}
