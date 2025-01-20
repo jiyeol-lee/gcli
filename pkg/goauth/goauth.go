@@ -11,8 +11,6 @@ import (
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
-	"google.golang.org/api/calendar/v3"
-	"google.golang.org/api/option"
 )
 
 type installed struct {
@@ -110,51 +108,6 @@ func (o *OAuth) SetClient(scope ...string) error {
 	o.Client = o.oauthConfig.Client(context.Background(), tok)
 
 	return nil
-}
-
-// GetCalendarService method returns a new calendar service.
-func (o *OAuth) GetCalendarService() (*calendar.Service, error) {
-	o.initializeCredentials()
-
-	ctx := context.Background()
-
-	b, err := json.Marshal(o.creds)
-	if err != nil {
-		return nil, err
-	}
-
-	config, err := google.ConfigFromJSON(b, calendar.CalendarEventsScope)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := getClient(config)
-	if err != nil {
-		return nil, err
-	}
-
-	return calendar.NewService(ctx, option.WithHTTPClient(client))
-}
-
-// getClient function retrieves a token, saves the token, then returns the generated client.
-func getClient(config *oauth2.Config) (*http.Client, error) {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return nil, err
-	}
-	tokFile := home + "/token.json"
-	tok, err := getTokenFromFile(tokFile)
-	if err != nil {
-		tok, err = getTokenFromWeb(config)
-		if err != nil {
-			return nil, err
-		}
-		err := saveToken(tokFile, tok)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return config.Client(context.Background(), tok), nil
 }
 
 // getTokenFromWeb function retrieves a token from the web.
