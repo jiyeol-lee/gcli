@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"google_app_cli/pkg/gcal"
-	"google_app_cli/pkg/utils"
 	"log"
 	"os"
 	"time"
+
+	"github.com/coding-for-fun-org/gcli/pkg/gcal"
+	"github.com/coding-for-fun-org/gcli/pkg/util"
 )
 
 func main() {

@@ -3,13 +3,13 @@ package gcal
 import (
 	"context"
 	"fmt"
-	"google_app_cli/pkg/goauth"
-	"google_app_cli/pkg/utils"
 	"log"
 	"regexp"
 	"strconv"
 	"time"
 
+	"github.com/coding-for-fun-org/gcli/pkg/goauth"
+	"github.com/coding-for-fun-org/gcli/pkg/util"
 	"google.golang.org/api/calendar/v3"
 	"google.golang.org/api/option"
 )

@@ -1,4 +1,4 @@
-module google_app_cli
+module github.com/coding-for-fun-org/gcli
 
 go 1.23.4
 
