@@ -31,7 +31,7 @@ func (c *Calendar) Initialize() {
 
 	o := goauth.OAuth{}
 
-	err := o.SetClient(calendar.CalendarEventsScope)
+	err := o.SetClient(calendar.CalendarEventsScope, calendar.CalendarReadonlyScope)
 	if err != nil {
 		log.Fatalf("Unable to set client: %v", err)
 	}
@@ -49,6 +49,7 @@ func (c *Calendar) Initialize() {
 func (c *Calendar) GetTodayEvents(onlySingleEvent bool) (*calendar.Events, error) {
 	tmin := util.StartOfDayTime()
 	tmax := util.EndOfDayTime()
+
 	evtListCall := c.Service.Events.List(c.Id).ShowDeleted(false).
 		SingleEvents(onlySingleEvent).TimeMin(tmin).TimeMax(tmax)
 	var evts *calendar.Events
