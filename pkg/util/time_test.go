@@ -138,6 +138,15 @@ func TestCalculateTimeGap(t *testing.T) {
 			want:    0,
 			wantErr: true,
 		},
+		{
+			name: "Only time is considered, date is ignored",
+			args: args{
+				startTimeRFC3339: "2021-01-01T00:00:00Z",
+				endTimeRFC3339:   "2031-12-31T02:02:02Z",
+			},
+			want:    time.Hour*2 + time.Minute*2 + time.Second*2,
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

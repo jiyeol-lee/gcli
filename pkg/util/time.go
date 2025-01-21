@@ -41,7 +41,28 @@ func CalculateTimeGap(startTimeRFC3339, endTimeRFC3339 string) (time.Duration, e
 		return 0, fmt.Errorf("error parsing end time: %w", err)
 	}
 
-	duration := endTime.Sub(startTime)
+	startTimeOnly := time.Date(
+		2000,
+		1,
+		1,
+		startTime.Hour(),
+		startTime.Minute(),
+		startTime.Second(),
+		0,
+		time.UTC,
+	)
+	endTimeOnly := time.Date(
+		2000,
+		1,
+		1,
+		endTime.Hour(),
+		endTime.Minute(),
+		endTime.Second(),
+		0,
+		time.UTC,
+	)
+
+	duration := endTimeOnly.Sub(startTimeOnly)
 
 	return duration, nil
 }
