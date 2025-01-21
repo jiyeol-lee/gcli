@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"sort"
 	"strconv"
 	"time"
 
@@ -50,18 +51,31 @@ func (c *Calendar) GetTodayEvents(onlySingleEvent bool) (*calendar.Events, error
 	tmin := util.StartOfDayTime()
 	tmax := util.EndOfDayTime()
 
-	evtListCall := c.Service.Events.List(c.Id).ShowDeleted(false).
-		SingleEvents(onlySingleEvent).TimeMin(tmin).TimeMax(tmax)
-	var evts *calendar.Events
-	var err error
-	if onlySingleEvent {
-		evts, err = evtListCall.OrderBy("startTime").Do()
-	} else {
-		evts, err = evtListCall.Do()
-	}
+	evts, err := c.Service.Events.List(c.Id).ShowDeleted(false).
+		SingleEvents(onlySingleEvent).TimeMin(tmin).TimeMax(tmax).Do()
 	if err != nil {
 		return nil, err
 	}
+
+	sort.Slice(evts.Items, func(i, j int) bool {
+		start1 := evts.Items[i].Start
+		start2 := evts.Items[j].Start
+
+		if start1 == nil || start2 == nil {
+			return false
+		}
+
+		if start1.DateTime == "" || start2.DateTime == "" {
+			return false
+		}
+
+		gap, err := util.CalculateTimeGap(start1.DateTime, start2.DateTime)
+		if err != nil {
+			return false
+		}
+
+		return gap > 0
+	})
 
 	return evts, nil
 }
