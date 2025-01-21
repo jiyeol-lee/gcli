@@ -30,7 +30,8 @@ func main() {
 	switch argsWithoutProg[0] {
 	case "list":
 		for _, item := range evts.Items {
-			if item.Start.DateTime == "" || item.End.DateTime == "" {
+			if item.Start == nil || item.End == nil || item.Start.DateTime == "" ||
+				item.End.DateTime == "" {
 				continue
 			}
 
@@ -57,7 +58,8 @@ func main() {
 	case "soon":
 		var output string
 		for _, item := range evts.Items {
-			if item.Start.DateTime == "" || item.End.DateTime == "" ||
+			if item.Start == nil || item.End == nil || item.Start.DateTime == "" ||
+				item.End.DateTime == "" ||
 				c.GetWorkingHoursProperty(item) != "" {
 				continue
 			}
