@@ -10,6 +10,8 @@ import (
 	"github.com/coding-for-fun-org/gcli/pkg/util"
 )
 
+var maxOutputLength = 20
+
 func main() {
 	c := gcal.Calendar{
 		Id: "primary",
@@ -70,7 +72,7 @@ func main() {
 				gap > 0 {
 				output = fmt.Sprintf(
 					"[%v] %.0f min left\n",
-					util.TruncateWithSuffix(item.Summary, 7),
+					util.TruncateWithSuffix(item.Summary, maxOutputLength),
 					gap.Minutes(),
 				)
 				break
@@ -84,26 +86,4 @@ func main() {
 
 		break
 	}
-
-	// evt, err := c.AddTotalWorkingEvent()
-	// if err != nil {
-	// 	log.Fatalf("Unable to add total working event: %v", err)
-	// }
-	//
-	// log.Printf("Total Working Event: %v\n", evt.HtmlLink)
-
-	// totalWorkingEvent, err := c.GetTodayTotalWorkingEvent(evts)
-	// if err != nil {
-	// 	log.Fatalf("Unable to get today's total working event: %v", err)
-	// }
-	// evt, err := c.UpdateTotalWorkingEvent(totalWorkingEvent, evts)
-	// if err != nil {
-	// 	log.Fatalf("Unable to update total working event: %v", err)
-	// }
-	// log.Printf("Total Working Event: %v\n", evt.HtmlLink)
-
-	// _, err = c.UpsertPendingEvent()
-	// if err != nil {
-	// 	log.Fatalf("Unable to upsert pending event: %v", err)
-	// }
 }

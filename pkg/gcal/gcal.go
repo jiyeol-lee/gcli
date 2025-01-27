@@ -57,6 +57,23 @@ func (c *Calendar) GetTodayEvents(onlySingleEvent bool) (*calendar.Events, error
 		return nil, err
 	}
 
+	// Filter out expired recurring events
+	evts.Items = func() []*calendar.Event {
+		var filteredEvts []*calendar.Event
+		for _, v := range evts.Items {
+			n := time.Now()
+			rec := util.FindUntilFromRecurrence(v.Recurrence)
+			recT, err := util.ParseUntilStringToTime(rec)
+			if rec == "" || (err != nil && recT.Before(n)) {
+				filteredEvts = append(filteredEvts, v)
+				continue
+			}
+		}
+
+		return filteredEvts
+	}()
+
+	// Sort the events by start time
 	sort.Slice(evts.Items, func(i, j int) bool {
 		start1 := evts.Items[i].Start
 		start2 := evts.Items[j].Start

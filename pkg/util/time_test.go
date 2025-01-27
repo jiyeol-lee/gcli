@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"reflect"
 	"regexp"
 	"strconv"
 	"testing"
@@ -77,6 +78,137 @@ func TestEndOfDayTime(t *testing.T) {
 			}
 			if !match {
 				t.Errorf("EndOfDayTime() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+// func TestParseUntilStringToRFC3339(t *testing.T) {
+// 	type args struct {
+// 		until string
+// 	}
+// 	tests := []struct {
+// 		name    string
+// 		args    args
+// 		want    string
+// 		wantErr bool
+// 	}{
+//     {
+//       name: "Correct date format (1)",
+//       args: args{
+//         until: "20231002T035959Z",
+//       },
+//       want: "2023-10-02T03:59:59Z",
+//       wantErr: false,
+//     },
+//     {
+//       name: "Correct date format (2)",
+//       args: args{
+//         until: "20240115T123000Z",
+//       },
+//       want: "2024-01-15T12:30:00Z",
+//       wantErr: false,
+//     },
+//     {
+//       name: "Correct date format (3)",
+//       args: args{
+//         until: "20250720T084500Z",
+//       },
+//       want: "2025-07-20T08:45:00Z",
+//       wantErr: false,
+//     },
+//     {
+//       name: "Wrong date format (1)",
+//       args: args{
+//         until: "2020202020202020",
+//       },
+//       want: "",
+//       wantErr: true,
+//     },
+//     {
+//       name: "Wrong date format (2)",
+//       args: args{
+//         until: "",
+//       },
+//       want: "",
+//       wantErr: true,
+//     },
+// 	}
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			got, err := ParseUntilStringToTime(tt.args.until)
+// 			if (err != nil) != tt.wantErr {
+// 				t.Errorf("ParseUntilStringToTime() error = %v, wantErr %v", err, tt.wantErr)
+// 				return
+// 			}
+// 			if got != tt.want {
+// 				t.Errorf("ParseUntilStringToTime() = %v, want %v", got, tt.want)
+// 			}
+// 		})
+// 	}
+// }
+
+func TestParseUntilStringToTime(t *testing.T) {
+	type args struct {
+		until string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    time.Time
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+    {
+      name: "Correct date format (1)",
+      args: args{
+        until: "20231002T035959Z",
+      },
+      want: time.Date(2023, 10, 2, 3, 59, 59, 0, time.UTC),
+      wantErr: false,
+    },
+    {
+      name: "Correct date format (2)",
+      args: args{
+        until: "20240115T123000Z",
+      },
+      want: time.Date(2024, 1, 15, 12, 30, 0, 0, time.UTC),
+      wantErr: false,
+    },
+    {
+      name: "Correct date format (3)",
+      args: args{
+        until: "20250720T084500Z",
+      },
+      want: time.Date(2025, 7, 20, 8, 45, 0, 0, time.UTC),
+      wantErr: false,
+    },
+    {
+      name: "Wrong date format (1)",
+      args: args{
+        until: "2020202020202020",
+      },
+      want: time.Time{},
+      wantErr: true,
+    },
+    {
+      name: "Wrong date format (2)",
+      args: args{
+        until: "",
+      },
+      want: time.Time{},
+      wantErr: true,
+    },
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ParseUntilStringToTime(tt.args.until)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ParseUntilStringToTime() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ParseUntilStringToTime() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -161,3 +293,5 @@ func TestCalculateTimeGap(t *testing.T) {
 		})
 	}
 }
+
+

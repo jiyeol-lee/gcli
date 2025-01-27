@@ -29,6 +29,17 @@ func EndOfDayTime() string {
 	return midnight.Format(time.RFC3339)
 }
 
+// ParseUntilStringToTime function parses a string to a time.Time
+func ParseUntilStringToTime(until string) (time.Time, error) {
+  layout:="20060102T150405Z"
+  untilTime, err := time.Parse(layout, until)
+  if err != nil {
+    return time.Time{}, fmt.Errorf("error parsing until time: %w", err)
+  }
+
+  return untilTime, nil
+}
+
 // CalculateTimeGap function calculates the duration between two RFC3339 formatted times
 func CalculateTimeGap(startTimeRFC3339, endTimeRFC3339 string) (time.Duration, error) {
 	startTime, err := time.Parse(time.RFC3339, startTimeRFC3339)
