@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"log"
 	"regexp"
-	"sort"
+	"slices"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/coding-for-fun-org/gcli/pkg/goauth"
@@ -57,10 +58,21 @@ func (c *Calendar) GetTodayEvents(onlySingleEvent bool) (*calendar.Events, error
 		return nil, err
 	}
 
-	// Filter out expired recurring events
+	// Filter out
+	// 1. expired recurring events
+	// 2. cancelled events
 	evts.Items = func() []*calendar.Event {
 		var filteredEvts []*calendar.Event
 		for _, v := range evts.Items {
+			idx := slices.IndexFunc(evts.Items, func(iv *calendar.Event) bool {
+				if strings.HasPrefix(iv.Id, v.Id) && iv.Status == "cancelled" {
+					return true
+				}
+				return false
+			})
+			if idx != -1 {
+				continue
+			}
 			n := time.Now()
 			rec := util.FindUntilFromRecurrence(v.Recurrence)
 			recT, err := util.ParseUntilStringToTime(rec)
@@ -74,24 +86,28 @@ func (c *Calendar) GetTodayEvents(onlySingleEvent bool) (*calendar.Events, error
 	}()
 
 	// Sort the events by start time
-	sort.Slice(evts.Items, func(i, j int) bool {
-		start1 := evts.Items[i].Start
-		start2 := evts.Items[j].Start
+	slices.SortFunc(evts.Items, func(a, b *calendar.Event) int {
+		start1 := a.Start
+		start2 := b.Start
 
-		if start1 == nil || start2 == nil {
-			return false
+		if start1 == nil && start2 != nil {
+			return -1
+		}
+
+		if start1 != nil && start2 == nil {
+			return 1
 		}
 
 		if start1.DateTime == "" || start2.DateTime == "" {
-			return false
+			return 0
 		}
 
 		gap, err := util.CalculateTimeGap(start1.DateTime, start2.DateTime)
 		if err != nil {
-			return false
+			return 0
 		}
 
-		return gap > 0
+		return -int(gap.Minutes())
 	})
 
 	return evts, nil
