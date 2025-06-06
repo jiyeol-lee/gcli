@@ -1,4 +1,4 @@
-module github.com/coding-for-fun-org/gcli
+module github.com/jiyeol-lee/gcli
 
 go 1.23.4
 

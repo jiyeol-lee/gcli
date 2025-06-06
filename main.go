@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/coding-for-fun-org/gcli/pkg/gcal"
-	"github.com/coding-for-fun-org/gcli/pkg/util"
+	"github.com/jiyeol-lee/gcli/pkg/gcal"
+	"github.com/jiyeol-lee/gcli/pkg/util"
 )
 
 var maxOutputLength = 20
@@ -104,7 +104,10 @@ func main() {
 			if err != nil {
 				log.Fatalf("Unable to parse end time: %v", err)
 			}
-			startGap, errStartGap := util.CalculateTimeGap(t.Format(time.RFC3339), item.Start.DateTime)
+			startGap, errStartGap := util.CalculateTimeGap(
+				t.Format(time.RFC3339),
+				item.Start.DateTime,
+			)
 			endGap, errEndGap := util.CalculateTimeGap(t.Format(time.RFC3339), item.End.DateTime)
 
 			if errStartGap == nil && startGap < 0 && errEndGap == nil && endGap > 0 {

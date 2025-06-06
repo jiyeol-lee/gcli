@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/coding-for-fun-org/gcli/pkg/goauth"
-	"github.com/coding-for-fun-org/gcli/pkg/util"
+	"github.com/jiyeol-lee/gcli/pkg/goauth"
+	"github.com/jiyeol-lee/gcli/pkg/util"
 	"google.golang.org/api/calendar/v3"
 	"google.golang.org/api/option"
 )
